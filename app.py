@@ -41,7 +41,7 @@ class Venue(db.Model):
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+    facebook_link = db.Column(db.String(500))
     genres = db.Column(db.String(500))
     website_link = db.Column(db.String(500))
     looking_for_talent = db.Column(db.Boolean)
@@ -53,13 +53,13 @@ class Artist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    city = db.Column(db.String(500))
+    state = db.Column(db.String(500))
+    phone = db.Column(db.String(500))
+    genres = db.Column(db.String(500))
     image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    website_link = db.Column(db.String(120))
+    facebook_link = db.Column(db.String(500))
+    website_link = db.Column(db.String(500))
     looking_for_venues = db.Column(db.Boolean)
     description = db.Column(db.String(500))
 
@@ -114,7 +114,7 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
 
-    data = Venue.query.filter_by(id=venue_id).order_by('id').all()
+    data = Venue.query.filter_by(id=venue_id).first()
     return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -130,16 +130,16 @@ def create_venue_form():
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
     try:
-        name = request.form['name']
-        city = request.form['city']
-        state = request.form['state']
-        address = request.form['address']
-        phone = request.form['phone']
-        image_link = request.form['image_link']
-        facebook_link = request.form['facebook_link']
-        genres = request.form['genres']
-        website_link = request.form['website_link']
-        description = request.form['description']
+        name = request.form.get('name')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        address = request.form.get('address')
+        phone = request.form.get('phone')
+        image_link = request.form.get('image_link')
+        facebook_link = request.form.get('facebook_link')
+        genres = request.form.get('genres')
+        website_link = request.form.get('website_link')
+        description = request.form.get('description')
 
         venue = Venue(
             name=name,
@@ -160,11 +160,10 @@ def create_venue_submission():
         db.session.commit()
 
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
-    except:
+    except Exception as e:
         db.session.rollback()
         flash("An error occured Venue" +
-              request.form['name'] + " could not be  listed! because")
-        print(sys.exc_info())
+              request.form['name'] + " could not be  listed! because of " + str(e))
     finally:
         db.session.close()
 
