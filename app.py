@@ -95,7 +95,6 @@ def index():
 
 @app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
     #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
     data = Venue.query.all()
     return render_template('pages/venues.html', areas=data)
@@ -107,14 +106,18 @@ def search_venues():
     # seach for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
     response = {
-        "count": 1,
+        "count": 2,
         "data": [{
             "id": 2,
             "name": "The Dueling Pianos Bar",
             "num_upcoming_shows": 0,
         }]
     }
-    return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+
+    query = request.form.get("search_term", '')
+    venues = Venue.query.filter(Venue.name.contains(query)).all()
+    print(venues, file=sys.stderr)
+    return render_template('pages/search_venues.html', results=venues, search_term=request.form.get('search_term', ''))
 
 
 @app.route('/venues/<int:venue_id>')
