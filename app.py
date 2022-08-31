@@ -240,8 +240,38 @@ def edit_artist(artist_id):
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-    # TODO: take values from the form submitted, and update existing
-    # artist record with ID <artist_id> using the new attributes
+
+    try:
+        artist = Artist.query.filter_by(id=artist_id).first()
+
+        name = request.form.get('name')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        phone = request.form.get('phone')
+        image_link = request.form.get('image_link')
+        facebook_link = request.form.get('facebook_link')
+        genres = request.form.get('genres')
+        website_link = request.form.get('website_link')
+        seeking_venue = request.form.get('seeking_venue')
+        description = request.form.get('seeking_description')
+
+        artist.name = name,
+        artist.city = city,
+        artist.sartist.tate = state,
+        artist.phone = phone,
+        artist.image_link = image_link,
+        artist.facebook_link = facebook_link,
+        artist.genres = genres,
+        artist.website_link = website_link,
+        artist.lartist.ooking_for_venues = seeking_venue,
+        artist.description = description
+
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+
+    finally:
+        db.session.close()
 
     return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -297,7 +327,6 @@ def edit_venue_submission(venue_id):
 
         db.session.commit()
 
-        flash('Venue ' + request.form['name'] + ' was successfully edited!')
     except Exception as e:
         db.session.rollback()
         flash("An error occured Venue" +
@@ -305,8 +334,6 @@ def edit_venue_submission(venue_id):
     finally:
         db.session.close()
 
-    # TODO: take values from the form submitted, and update existing
-    # venue record with ID <venue_id> using the new attributes
     return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
@@ -369,42 +396,6 @@ def shows():
     # displays list of shows at /shows
     shows = Show.query.all()
 
-    data1 = [{
-        "venue_id": 1,
-        "venue_name": "The Musical Hop",
-        "artist_id": 4,
-        "artist_name": "Guns N Petals",
-        "artist_image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-        "start_time": "2019-05-21T21:30:00.000Z"
-    }, {
-        "venue_id": 3,
-        "venue_name": "Park Square Live Music & Coffee",
-        "artist_id": 5,
-        "artist_name": "Matt Quevedo",
-        "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-        "start_time": "2019-06-15T23:00:00.000Z"
-    }, {
-        "venue_id": 3,
-        "venue_name": "Park Square Live Music & Coffee",
-        "artist_id": 6,
-        "artist_name": "The Wild Sax Band",
-        "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-        "start_time": "2035-04-01T20:00:00.000Z"
-    }, {
-        "venue_id": 3,
-        "venue_name": "Park Square Live Music & Coffee",
-        "artist_id": 6,
-        "artist_name": "The Wild Sax Band",
-        "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-        "start_time": "2035-04-08T20:00:00.000Z"
-    }, {
-        "venue_id": 3,
-        "venue_name": "Park Square Live Music & Coffee",
-        "artist_id": 6,
-        "artist_name": "The Wild Sax Band",
-        "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-        "start_time": "2035-04-15T20:00:00.000Z"
-    }]
     return render_template('pages/shows.html', shows=shows)
 
 
