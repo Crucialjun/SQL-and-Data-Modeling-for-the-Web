@@ -62,7 +62,7 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(500))
     website_link = db.Column(db.String(500))
-    looking_for_venues = db.Column(db.Boolean)
+    seeking_venue = db.Column(db.Boolean)
     description = db.Column(db.String(500))
     shows = db.relationship('Show', backref='artists', lazy=True)
 
@@ -263,7 +263,7 @@ def edit_artist_submission(artist_id):
         artist.facebook_link = facebook_link,
         artist.genres = genres,
         artist.website_link = website_link,
-        artist.lartist.ooking_for_venues = seeking_venue,
+        artist.seeking_venue = seeking_venue,
         artist.description = description
 
         db.session.commit()
@@ -357,7 +357,11 @@ def create_artist_submission():
         facebook_link = request.form.get('facebook_link')
         genres = request.form.get('genres')
         website_link = request.form.get('website_link')
-        seeking_venue = request.form.get('seeking_venue')
+        if request.form.get('seeking_venue'):
+            seeking_venue = True
+        else:
+            seeking_venue = False
+
         description = request.form.get('seeking_description')
 
         artist = Artist(
@@ -369,7 +373,7 @@ def create_artist_submission():
             facebook_link=facebook_link,
             genres=genres,
             website_link=website_link,
-            looking_for_venues=seeking_venue,
+            seeking_venue=seeking_venue,
             description=description
 
 
