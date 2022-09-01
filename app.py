@@ -65,6 +65,10 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean)
     description = db.Column(db.String(500))
     shows = db.relationship('Show', backref='artists', lazy=True)
+    upcoming_shows_count = db.Column(db.Integer)
+    past_shows_count = db.Column(db.Integer)
+    upcoming_shows = db.Column(db.String(500))
+    past_shows_count = db.Column(db.String(500))
 
 
 class Show(db.Model):
@@ -74,7 +78,7 @@ class Show(db.Model):
     artist_id = db.Column(db.Integer, db.ForeignKey(
         'Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
-    start_time = db.Column(db.String(120))
+    start_time = db.Column(db.DateTime)
 
 
 #----------------------------------------------------------------------------#
@@ -83,7 +87,7 @@ class Show(db.Model):
 
 
 def format_datetime(value, format='medium'):
-    date = dateutil.parser.parse(value)
+    date = dateutil.parser.parse(str(value))
     if format == 'full':
         format = "EEEE MMMM, d, y 'at' h:mma"
     elif format == 'medium':
@@ -224,8 +228,29 @@ def search_artists():
 def show_artist(artist_id):
     # shows the artist page with the given artist_id
 
-    data = Artist.query.filter_by(id=artist_id).first()
-    return render_template('pages/show_artist.html', artist=data)
+    past_shows_query = db.session.query(Show).join(Venue).filter(
+        Show.artist_id == artist_id).filter(Show.start_time < datetime.now()).all()
+    past_shows = []
+
+    for show in past_shows_query:
+        past_shows.append(show)
+
+    upcoming_shows_query = db.session.query(Show).join(Venue).filter(
+        Show.artist_id == artist_id).filter(Show.start_time > datetime.now()).all()
+
+    upcoming_shows = []
+
+    for show in upcoming_shows_query:
+        upcoming_shows.append(show)
+
+    artist = Artist.query.filter_by(id=artist_id).first()
+
+    artist.past_shows = past_shows
+    artist.past_shows_count = len(past_shows)
+    artist.upcoming_shows = past_shows
+    artist.upcoming_shows_count = len(past_shows)
+
+    return render_template('pages/show_artist.html', artist=artist)
 
 #  Update
 #  ----------------------------------------------------------------
